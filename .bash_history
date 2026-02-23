@@ -233,3 +233,44 @@ python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 EXIT
 deactivate
 exit
+nano requirements.txt
+nano /home/louis/main.py
+ls -l /home/louis/
+cd /home/louis/
+sudo apt update && sudo apt install git -y
+# 1. Initialise le dossier
+git init
+# 2. Ajoute tous tes fichiers (main.py, requirements.txt, dossier static)
+git add .
+# 3. Crée ton premier point de sauvegarde
+git commit -m "Mise en ligne Nomad Pi"
+# 4. Renomme la branche principale
+git branch -M main
+# 5. Connecte ton Pi à GitHub (lecodeurduweb)
+git remote add origin https://github.com/lecodeurduweb/site-web.git
+# 6. Envoie le code !
+git push -u origin main
+git config --global user.email "louis.sittler2012@outlook.fr"
+git config --global user.name "lecodeurduweb"
+# 1. Initialise le projet
+git init
+# 2. Crée un fichier pour ignorer les dossiers inutiles
+echo "venv/" > .gitignore
+echo "__pycache__/" >> .gitignore
+echo "*.db" >> .gitignore
+# 1. Initialise le projet
+git init
+# 2. Crée un fichier pour ignorer les dossiers inutiles
+echo "venv/" > .gitignore
+echo "__pycache__/" >> .gitignore
+echo "*.db" >> .gitignore
+git push -u origin main
+git add .
+git commit -m "Premier envoi du site Nomad Pi"
+git branch -M main
+git push -u origin main
+git push -u origin maingit push -u origin maingit push -u origin maingit push -u origin maingit push -u origin main
+git push -u origin main
+git remote set-url origin https://github.com/lecodeurduweb/site-web.git
+git push -u origin main
+sudo poweroff
