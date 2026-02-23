@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révisions - Nomad Pi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap'); body { font-family: 'Poppins', sans-serif; }</style>
+</head>
+<body class="bg-[#F8F9FD] pb-24">
+    <div class="p-6">
+        <a href="/" class="text-blue-600 font-bold mb-4 block"><i class="fas fa-arrow-left"></i> Retour</a>
+        
+        <div id="matiere-header" class="bg-white p-8 rounded-[40px] shadow-sm text-center mb-6 border border-gray-100">
+            <div id="matiere-icon" class="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg"></div>
+            <h1 id="matiere-title" class="text-2xl font-bold text-gray-800 capitalize italic">Matière</h1>
+            <p class="text-gray-400 text-sm">Prêt pour tes révisions ?</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-white p-5 rounded-[30px] flex justify-between items-center shadow-sm">
+                <div><p class="font-bold text-gray-800">Chapitre 1 : Introduction</p><p class="text-[10px] text-blue-500 font-bold">DISPONIBLE</p></div>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Lancer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const matiere = urlParams.get('m') || 'Matière';
+        document.getElementById('matiere-title').innerText = matiere;
+        
+        const config = {
+            'maths': { icon: 'fa-calculator', bg: 'bg-orange-100', text: 'text-orange-500' },
+            'français': { icon: 'fa-book', bg: 'bg-blue-100', text: 'text-blue-500' },
+            'physique-chimie': { icon: 'fa-flask', bg: 'bg-green-100', text: 'text-green-500' },
+            'svt': { icon: 'fa-dna', bg: 'bg-emerald-100', text: 'text-emerald-500' },
+            'histoire': { icon: 'fa-monument', bg: 'bg-red-100', text: 'text-red-500' },
+            'géographie': { icon: 'fa-earth-europe', bg: 'bg-cyan-100', text: 'text-cyan-500' },
+            'technologie': { icon: 'fa-microchip', bg: 'bg-gray-100', text: 'text-gray-600' },
+            'emc': { icon: 'fa-scale-balanced', bg: 'bg-yellow-100', text: 'text-yellow-600' },
+            'anglais': { icon: 'fa-comments', bg: 'bg-pink-100', text: 'text-pink-500' },
+            'espagnol': { icon: 'fa-language', bg: 'bg-orange-50', text: 'text-orange-600' },
+            'allemand': { icon: 'fa-language', bg: 'bg-slate-100', text: 'text-slate-700' }
+        };
+
+        const c = config[matiere.toLowerCase()] || { icon: 'fa-graduation-cap', bg: 'bg-gray-100', text: 'text-gray-500' };
+        const iconDiv = document.getElementById('matiere-icon');
+        iconDiv.innerHTML = `<i class="fas ${c.icon}"></i>`;
+        iconDiv.className = `w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg ${c.bg} ${c.text}`;
+    </script>
+</body>
+</html>

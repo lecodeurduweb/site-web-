@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"><script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .suggestion-item { cursor: pointer; padding: 10px; border-bottom: 1px solid #334155; }
+        .suggestion-item:hover { color: #10b981; background: #1e293b; }
+        .no-result { padding: 10px; color: #94a3b8; font-size: 0.8rem; border-top: 1px solid #475569; }
+    </style>
+</head>
+<body class="bg-slate-950 text-white flex items-center justify-center h-screen p-4">
+    <div class="bg-slate-900 p-10 rounded-[3rem] w-full max-w-md border border-slate-800 shadow-2xl">
+        <h1 class="text-5xl font-black mb-10 text-center text-emerald-400 italic tracking-tighter">NOMAD PI</h1>
+        
+        <form id="form-auth" class="space-y-4">
+            <div id="reg-fields" class="hidden space-y-4">
+                <input type="text" name="pseudo" placeholder="Pseudo" class="w-full bg-slate-800 p-4 rounded-2xl border border-slate-700">
+                
+                <div class="relative">
+                    <input type="text" id="school-search" placeholder="Cherche ton établissement..." class="w-full bg-slate-800 p-4 rounded-2xl border border-slate-700">
+                    <input type="hidden" name="etablissement" id="school-final">
+                    <div id="suggestions" class="absolute z-20 w-full bg-slate-800 border border-slate-700 rounded-2xl mt-2 max-h-56 overflow-y-auto hidden"></div>
+                </div>
+
+                <select name="niveau" class="w-full bg-slate-800 p-4 rounded-2xl border border-slate-700">
+                    <option value="Primaire">Primaire</option><option value="Collège">Collège</option><option value="Lycée">Lycée</option>
+                </select>
+            </div>
+
+            <input type="email" name="email" placeholder="Email" class="w-full bg-slate-800 p-4 rounded-2xl border border-slate-700" required>
+            <input type="password" name="password" placeholder="Mot de passe" class="w-full bg-slate-800 p-4 rounded-2xl border border-slate-700" required>
+            
+            <button type="submit" id="btn-main" class="w-full bg-emerald-500 p-5 rounded-3xl font-black text-xl hover:scale-105 transition shadow-lg shadow-emerald-500/20 text-slate-950">SE CONNECTER</button>
+            <p class="text-center text-gray-500 mt-4"><a href="#" onclick="toggleMode()" id="toggle-link" class="underline">Créer un compte élève</a></p>
+        </form>
+    </div>
+
+    <script>
+        let isLogin = true;
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('reg-fields').classList.toggle('hidden');
+            document.getElementById('btn-main').innerText = isLogin ? "SE CONNECTER" : "REJOINDRE";
+            document.getElementById('toggle-link').innerText = isLogin ? "Créer un compte élève" : "J'ai déjà un compte";
+        }
+
+        const search = document.getElementById('school-search');
+        const sug = document.getElementById('suggestions');
+        const finalInput = document.getElementById('school-final');
+
+        search.addEventListener('input', async (e) => {
+            const val = e.target.value;
+            if (val.length < 3) return sug.classList.add('hidden');
+
+            try {
+                const r = await fetch(`https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-annuaire-education/records?where=nom_etablissement%20like%20%22${encodeURIComponent(val)}%22&limit=5`);
+                const d = await r.json();
+                
+                sug.innerHTML = '';
+                sug.classList.remove('hidden');
+
+                if (d.results && d.results.length > 0) {
+                    d.results.forEach(s => {
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        item.innerText = `${s.nom_etablissement} (${s.nom_commune})`;
+                        item.onclick = () => {
+                            search.value = s.nom_etablissement;
+                            finalInput.value = s.nom_etablissement;
+                            sug.classList.add('hidden');
+                        };
+                        sug.appendChild(item);
+                    });
+                }
+
+                // OPTION SI L'ECOLE N'Y EST PAS
+                const manual = document.createElement('div');
+                manual.className = 'no-result italic cursor-pointer hover:text-emerald-400';
+                manual.innerHTML = `<i class="fa fa-plus-circle mr-2"></i>Utiliser "${val}" (école non listée)`;
+                manual.onclick = () => {
+                    finalInput.value = val;
+                    sug.classList.add('hidden');
+                    alert("École enregistrée manuellement : " + val);
+                };
+                sug.appendChild(manual);
+
+            } catch (err) { console.error("API Error", err); }
+        });
+
+        document.getElementById('form-auth').onsubmit = async (e) => {
+            e.preventDefault();
+            // Si l'utilisateur n'a pas cliqué sur une suggestion, on prend ce qu'il y a dans l'input
+            if (!finalInput.value) finalInput.value = search.value;
+            
+            const res = await fetch(isLogin ? "/login" : "/register", { method: "POST", body: new FormData(e.target) });
+            const data = await res.json();
+            if (res.ok) {
+                if(isLogin) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = "/static/index.html";
+                } else { alert("Compte créé !"); toggleMode(); }
+            } else { alert("Identifiants incorrects ou déjà utilisés"); }
+        };
+    </script>
+</body>
+</html>
