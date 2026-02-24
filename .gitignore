@@ -1,3 +1,6 @@
 venv/
 __pycache__/
 *.db
+.cache/
+.bash_history
+.env
