@@ -9,14 +9,17 @@
 <body class="bg-slate-950 text-white flex items-center justify-center min-h-screen font-sans">
     <div class="bg-slate-900 p-8 rounded-[2rem] shadow-2xl border border-slate-800 w-full max-w-md text-center">
         <h1 class="text-3xl font-black text-emerald-400 mb-2 italic">NOMAD PI</h1>
-        <p class="text-gray-400 mb-8">Un code de vérification a été généré dans les logs.</p>
-        <form action="/verify-code" method="POST" class="space-y-6">
+        <p class="text-gray-400 mb-8">Entre le code reçu pour valider ton compte.</p>
+        
+        <form action="/verify" method="POST" class="space-y-6">
             <input type="hidden" name="email" value="{{ email }}">
+            
             <div>
                 <label class="block text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">Code à 6 chiffres</label>
                 <input type="text" name="code" maxlength="6" required 
-                    class="w-full bg-slate-950 border border-slate-800 p-4 rounded-xl text-center text-2xl font-mono tracking-[1em] focus:border-emerald-500 outline-none transition">
+                    class="w-full bg-slate-950 border border-slate-800 p-4 rounded-xl text-center text-2xl font-mono tracking-[0.5em] focus:border-emerald-500 outline-none transition">
             </div>
+
             <button type="submit" 
                 class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl shadow-lg shadow-emerald-900/20 transition-all active:scale-95">
                 VALIDER MON COMPTE
