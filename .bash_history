@@ -274,3 +274,21 @@ git push -u origin main
 git remote set-url origin https://github.com/lecodeurduweb/site-web.git
 git push -u origin main
 sudo poweroff
+git push -u origin main
+git remote set-url origin https://github.com/lecodeurduweb/site-web.git
+git add .
+git commit -m "Préparation pour la mise en ligne"
+git push -u origin main
+git remote remove origin
+git remote add origin https://github.com/lecodeurduweb/site-web.git
+git push -u origin main
+git remote set-url origin https://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@github.com/lecodeurduweb/site-web.git
+git push -u origin main
+git remote set-url origin https://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@github.com/lecodeurduweb/site-web.git
+git branch -M main
+git push -u origin main
+git remote set-url origin https://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@github.com/lecodeurduweb/site-web-.git
+git push -u origin main
+git remote set-url origin https://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@github.com/lecodeurduweb/site-web-.git
+git push -u origin main
+sudo poweroff
