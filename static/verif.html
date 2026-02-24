@@ -2,213 +2,26 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Nomad Pi - Plateforme Officielle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification - Nomad Pi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .tab { display: none; } 
-        .active { display: block; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-    </style>
 </head>
-<body class="bg-slate-950 text-white flex h-screen overflow-hidden font-sans">
-    
-    <nav class="w-72 bg-slate-900 border-r border-slate-800 flex flex-col p-6 shadow-2xl">
-        <div class="text-3xl font-black text-emerald-400 mb-10 italic tracking-tighter">NOMAD PI</div>
-        
-        <div class="space-y-2 flex-1">
-            <button onclick="nav('cours')" class="w-full text-left p-4 hover:bg-slate-800 rounded-2xl transition flex items-center">
-                <i class="fa fa-book-open mr-3 text-emerald-400 w-6"></i> Mes Cours
-            </button>
-            <button onclick="nav('ia')" class="w-full text-left p-4 hover:bg-slate-800 rounded-2xl transition flex items-center">
-                <i class="fa fa-robot mr-3 text-blue-400 w-6"></i> IA Prof
-            </button>
-            <button onclick="nav('ligue')" class="w-full text-left p-4 hover:bg-slate-800 rounded-2xl transition flex items-center">
-                <i class="fa fa-trophy mr-3 text-yellow-500 w-6"></i> Ligue
-            </button>
-            <button onclick="nav('boutique')" class="w-full text-left p-4 hover:bg-slate-800 rounded-2xl transition flex items-center">
-                <i class="fa fa-shopping-cart mr-3 text-purple-500 w-6"></i> Boutique
-            </button>
-            <button onclick="nav('outils')" class="w-full text-left p-4 hover:bg-slate-800 rounded-2xl transition flex items-center">
-                <i class="fa fa-tools mr-3 text-orange-400 w-6"></i> Outils
-            </button>
-            
-            <button id="btn-adm" onclick="nav('admin')" class="w-full text-left p-4 bg-red-950/30 text-red-400 rounded-2xl hidden mt-6 border border-red-900/50">
-                <i class="fa fa-user-shield mr-3 w-6"></i> Console Maître
-            </button>
-        </div>
-
-        <div class="pt-6 border-t border-slate-800 mt-4 text-center">
-            <p id="user-school" class="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-4"></p>
-            <button onclick="logout()" class="w-full p-4 text-red-500 hover:bg-red-500/10 rounded-2xl text-left transition">
-                <i class="fa fa-power-off mr-2"></i> Déconnexion
-            </button>
-        </div>
-    </nav>
-
-    <main class="flex-1 flex flex-col relative">
-        <header class="h-20 bg-slate-900/50 border-b border-slate-800 flex justify-end items-center px-10 gap-8 backdrop-blur-md">
-            <div class="flex items-center gap-2 font-bold text-orange-500">🔥 <span id="f-val">0</span></div>
-            <div class="flex items-center gap-2 font-bold text-emerald-400">💎 <span id="x-val">0</span></div>
-            <div id="n-val" class="bg-emerald-600 px-4 py-1 rounded-full text-[10px] font-black uppercase shadow-lg shadow-emerald-900/20"></div>
-        </header>
-
-        <div class="p-10 overflow-auto flex-1">
-            
-            <div id="tab-cours" class="tab active">
-                <h2 class="text-4xl font-black mb-8">Tes matières <span class="text-emerald-400" id="n-title"></span></h2>
-                <div id="m-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+<body class="bg-slate-950 text-white flex items-center justify-center min-h-screen font-sans">
+    <div class="bg-slate-900 p-8 rounded-[2rem] shadow-2xl border border-slate-800 w-full max-w-md text-center">
+        <h1 class="text-3xl font-black text-emerald-400 mb-2 italic">NOMAD PI</h1>
+        <p class="text-gray-400 mb-8">Un code de vérification a été généré dans les logs.</p>
+        <form action="/verify-code" method="POST" class="space-y-6">
+            <input type="hidden" name="email" value="{{ email }}">
+            <div>
+                <label class="block text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">Code à 6 chiffres</label>
+                <input type="text" name="code" maxlength="6" required 
+                    class="w-full bg-slate-950 border border-slate-800 p-4 rounded-xl text-center text-2xl font-mono tracking-[1em] focus:border-emerald-500 outline-none transition">
             </div>
-
-            <div id="tab-ia" class="tab">
-                <h2 class="text-4xl font-black mb-8 text-blue-400">🤖 Assistant Intelligent</h2>
-                <div class="bg-slate-900 p-8 rounded-[2rem] border border-blue-500/20 shadow-2xl">
-                    <input type="text" id="ia-q" class="w-full bg-slate-950 p-5 rounded-2xl mb-4 border border-slate-800 focus:border-blue-500 outline-none transition" placeholder="Pose une question sur tes cours...">
-                    <button onclick="askIA()" class="w-full bg-blue-600 p-5 rounded-2xl font-black text-xl hover:bg-blue-500 transition shadow-lg shadow-blue-900/40">INTERROGER NOMAD PI</button>
-                    <div id="ia-ans" class="mt-8 p-6 bg-slate-950 rounded-2xl border-l-4 border-blue-500 hidden text-gray-300 leading-relaxed italic"></div>
-                </div>
-            </div>
-
-            <div id="tab-ligue" class="tab">
-                <h2 class="text-4xl font-black mb-8 text-yellow-500">🏆 Classement des Écoles</h2>
-                <div class="bg-slate-900 rounded-[2rem] p-8 border border-yellow-500/10">
-                    <div class="flex justify-between items-center p-6 bg-yellow-500/10 border-l-8 border-yellow-500 rounded-2xl mb-6">
-                        <span class="font-black text-xl">1. <span id="my-school-name"></span></span>
-                        <span class="font-black text-yellow-500">12 450 XP</span>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-boutique" class="tab">
-                <h2 class="text-4xl font-black mb-8 text-purple-500">💎 Boutique Nomad</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                    <div class="bg-slate-900 p-8 rounded-3xl border border-purple-500/20">
-                        <div class="text-5xl mb-4">🧊</div>
-                        <h3 class="font-black mb-2">GEL FLAMME</h3>
-                        <p class="text-xs text-gray-500 mb-6">Protège ta série pendant 24h.</p>
-                        <button class="bg-purple-600 w-full py-3 rounded-xl font-bold">200 💎</button>
-                    </div>
-                    <div class="bg-slate-900 p-8 rounded-3xl border border-purple-500/20">
-                        <div class="text-5xl mb-4">⚡</div>
-                        <h3 class="font-black mb-2">BOOST XP</h3>
-                        <p class="text-xs text-gray-500 mb-6">Gagne 2x plus d'XP.</p>
-                        <button class="bg-purple-600 w-full py-3 rounded-xl font-bold">500 💎</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-outils" class="tab">
-                <h2 class="text-4xl font-black mb-8 text-orange-400">🛠️ Outils de Travail</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-slate-900 p-8 rounded-3xl border border-orange-500/20">
-                        <h3 class="font-black mb-4 uppercase">Calculatrice</h3>
-                        <input type="text" id="calc-in" class="w-full bg-slate-950 p-4 rounded-xl mb-4 text-center text-xl font-mono" placeholder="Ex: 5 * (10/2)">
-                        <button onclick="calculate()" class="w-full bg-orange-600 p-3 rounded-xl font-black hover:bg-orange-500 transition">RÉSULTAT</button>
-                        <div id="calc-res" class="mt-4 text-3xl font-black text-emerald-400 text-center"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-admin" class="tab">
-                <h2 class="text-4xl font-black mb-8 text-red-500 uppercase italic">Console Maître</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-slate-900 p-8 rounded-3xl border border-red-500/20 shadow-xl">
-                        <h3 class="text-xl font-bold mb-4">📤 Upload Cours Officiel</h3>
-                        <input type="file" id="adm-file" class="hidden" onchange="uploadAdmin()">
-                        <button onclick="document.getElementById('adm-file').click()" class="w-full bg-white text-slate-950 p-5 rounded-2xl font-black hover:bg-red-500 hover:text-white transition shadow-lg">SÉLECTIONNER PDF / TXT</button>
-                        <p id="adm-up-status" class="mt-4 text-center text-sm italic text-gray-500"></p>
-                    </div>
-                    <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800">
-                        <h3 class="text-xl font-bold mb-4">📚 Bibliothèque IA</h3>
-                        <div id="adm-lib" class="space-y-3 max-h-64 overflow-y-auto pr-2"></div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <script>
-        const u = JSON.parse(localStorage.getItem('user'));
-        if(!u) window.location.href = "/";
-
-        // Initialisation Stats
-        document.getElementById('f-val').innerText = u.flammes;
-        document.getElementById('x-val').innerText = u.points;
-        document.getElementById('n-val').innerText = u.niveau;
-        document.getElementById('n-title').innerText = u.niveau;
-        document.getElementById('user-school').innerText = u.etablissement;
-        document.getElementById('my-school-name').innerText = u.etablissement;
-        if(u.role === 'admin') document.getElementById('btn-adm').classList.remove('hidden');
-
-        // Navigation
-        function nav(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-'+id).classList.add('active');
-            if(id === 'cours') loadM();
-            if(id === 'admin') loadLib();
-        }
-
-        // Chargement Matières
-        async function loadM() {
-            const r = await fetch(`/api/matieres?niveau=${u.niveau}`);
-            const d = await r.json();
-            document.getElementById('m-grid').innerHTML = d.matieres.map(m => `
-                <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 hover:border-emerald-500/50 transition cursor-pointer flex justify-between items-center group shadow-xl">
-                    <span class="font-black text-lg uppercase tracking-tight">${m}</span>
-                    <i class="fa fa-chevron-right text-slate-700 group-hover:text-emerald-500 group-hover:translate-x-2 transition"></i>
-                </div>`).join('');
-        }
-
-        // Outil Calculatrice
-        function calculate() {
-            try { document.getElementById('calc-res').innerText = eval(document.getElementById('calc-in').value); }
-            catch { document.getElementById('calc-res').innerText = "Erreur !"; }
-        }
-
-        // IA Chat
-        async function askIA() {
-            const q = document.getElementById('ia-q').value;
-            const ans = document.getElementById('ia-ans');
-            if(!q) return;
-            ans.classList.remove('hidden'); ans.innerText = "Nomad Pi analyse tes documents...";
-            const fd = new FormData(); fd.append("question", q);
-            const r = await fetch("/api/ia-chat", {method:"POST", body:fd});
-            const d = await r.json();
-            ans.innerText = d.reponse;
-        }
-
-        // --- FONCTIONS ADMIN ---
-        async function loadLib() {
-            const r = await fetch("/admin/liste-cours");
-            const d = await r.json();
-            const lib = document.getElementById('adm-lib');
-            lib.innerHTML = d.cours.length ? d.cours.map(f => `
-                <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700">
-                    <span class="truncate text-sm font-medium"><i class="fa fa-file-pdf mr-3 text-red-500"></i>${f}</span>
-                    <button onclick="delFile('${f}')" class="text-gray-500 hover:text-red-500 transition"><i class="fa fa-trash-alt"></i></button>
-                </div>`).join('') : "<p class='text-gray-600 italic text-sm text-center'>Aucun cours dans la base.</p>";
-        }
-
-        async function uploadAdmin() {
-            const file = document.getElementById('adm-file').files[0];
-            const status = document.getElementById('adm-up-status');
-            const fd = new FormData(); fd.append("file", file);
-            status.innerText = "Téléchargement...";
-            const res = await fetch("/admin/upload-permanent", {method:"POST", body:fd});
-            if(res.ok) { status.innerText = "✅ Succès !"; loadLib(); }
-        }
-
-        async function delFile(name) {
-            if(!confirm("Supprimer ce fichier ?")) return;
-            const fd = new FormData(); fd.append("filename", name);
-            await fetch("/admin/supprimer", {method:"POST", body:fd});
-            loadLib();
-        }
-
-        function logout() { localStorage.clear(); window.location.href = "/"; }
-        loadM();
-    </script>
+            <button type="submit" 
+                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl shadow-lg shadow-emerald-900/20 transition-all active:scale-95">
+                VALIDER MON COMPTE
+            </button>
+        </form>
+    </div>
 </body>
 </html>
