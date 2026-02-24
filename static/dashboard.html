@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Dashboard - Nomad Pi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-[#F8F9FD] text-slate-800 font-sans">
+
+    <nav class="bg-white border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-8">
+            <h1 class="text-2xl font-black text-[#FF6B35] italic tracking-tighter">NOMAD PI</h1>
+            <div class="hidden md:flex gap-6 font-semibold text-slate-500">
+                <a href="#" class="text-violet-600 border-b-2 border-violet-600">Accueil</a>
+                <a href="#" class="hover:text-violet-600 transition">Révisions</a>
+                <a href="#" class="hover:text-violet-600 transition">Pour toi</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-bold shadow-sm">
+                💎 S'ABONNER
+            </button>
+            <div class="w-10 h-10 bg-violet-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                <span id="user-initial">L</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-8">
+            
+            <div class="flex items-center gap-4">
+                <span class="text-4xl">☀️</span>
+                <h2 class="text-3xl font-black tracking-tight">Hello <span id="user-name" class="text-violet-600">Louis</span> !</h2>
+            </div>
+
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" placeholder="On révise quoi aujourd'hui ?" 
+                       class="w-full bg-white p-5 pl-14 rounded-2xl border border-slate-100 shadow-sm focus:ring-2 focus:ring-violet-200 outline-none transition">
+            </div>
+
+            <div class="bg-gradient-to-r from-violet-600 to-indigo-700 p-8 rounded-[2rem] text-white flex justify-between items-center shadow-xl relative overflow-hidden">
+                <div class="z-10">
+                    <h3 class="text-xl font-bold mb-2">Crée tes révisions 100% personnalisées avec l'IA</h3>
+                </div>
+                <span class="text-4xl z-10">🪄</span>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold mb-6">À toi de jouer !</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer text-center">
+                        <div class="text-3xl mb-3">🎓</div>
+                        <p class="font-bold text-sm">Pack Réussite 2026</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer text-center">
+                        <div class="text-3xl mb-3">❓</div>
+                        <p class="font-bold text-sm">Tes quiz pour réviser</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer text-center">
+                        <div class="text-3xl mb-3">🧭</div>
+                        <p class="font-bold text-sm">Ton test d'orientation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 grid grid-cols-3 gap-2">
+                <div class="text-center">
+                    <p class="text-violet-600 font-black">🟣 220</p>
+                    <p class="text-[10px] uppercase text-slate-400 font-bold">Points</p>
+                </div>
+                <div class="text-center border-x border-slate-50">
+                    <p class="text-orange-500 font-black">🔥 0</p>
+                    <p class="text-[10px] uppercase text-slate-400 font-bold">Jours</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-amber-500 font-black">🏅 7</p>
+                    <p class="text-[10px] uppercase text-slate-400 font-bold">Niveau</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                <h4 class="text-center text-slate-400 text-xs font-bold uppercase mb-4 tracking-widest">Trophées</h4>
+                <div class="flex justify-center gap-3">
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center grayscale">🥉</span>
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">🥈</span>
+                    <span class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center grayscale">🥇</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                <h4 class="font-bold mb-4">Statistiques de révision</h4>
+                <div class="bg-slate-50 p-4 rounded-2xl">
+                    <p class="text-xs font-bold text-slate-500 mb-2 uppercase">Ton objectif hebdo</p>
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div class="bg-violet-600 h-full w-[20%]"></div>
+                    </div>
+                    <p class="text-right text-[10px] mt-2 font-bold text-violet-600">3 min / 15 min</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Récupérer les infos de l'utilisateur connecté
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData) {
+            document.getElementById('user-name').innerText = userData.pseudo;
+            document.getElementById('user-initial').innerText = userData.pseudo.charAt(0).toUpperCase();
+        }
+    </script>
+</body>
+</html>
