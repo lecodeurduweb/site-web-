@@ -1,143 +1,98 @@
-import os
-import random
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from fastapi import FastAPI, Form, Request, BackgroundTasks
-from fastapi.responses import JSONResponse, RedirectResponse, FileResponse
+from fastapi import FastAPI, Form, Request, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+import psycopg2
+import random
+import os
+import smtplib
+from email.mime.text import MIMEText
 
-app = FastAPI(title="Nomad Pi Online")
+app = FastAPI()
 
-# --- CONFIGURATION ---
-# Récupère l'URL Neon que tu as mise dans Render
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# Configuration des templates et fichiers statiques
-templates = Jinja2Templates(directory="static")
+# Montage des fichiers statiques (pour le CSS et le JS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# --- FONCTIONS BASE DE DONNÉES ---
+# --- CONFIGURATION BASE DE DONNÉES (NEON) ---
+DB_URL = "postgresql://neondb_owner:npg_u3BfN1YvAatL@ep-fancy-grass-a2v330p9-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require"
 
-def get_db_connection():
-    # Connexion directe avec ton lien binding=require
-    return psycopg2.connect(DATABASE_URL)
+# --- CONFIGURATION EMAIL (OUTLOOK) ---
+EMAIL_ADDRESS = "nomadpi2026@outlook.fr"
+EMAIL_APP_PASSWORD = "fnnvcovbfmpumudd" # <--- METS TES 16 LETTRES ICI
 
-def init_db():
-    """ Crée la table et l'admin si nécessaire au démarrage """
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # Création de la table utilisateurs
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            email TEXT PRIMARY KEY,
-            pseudo TEXT,
-            password TEXT,
-            role TEXT,
-            code_verif TEXT,
-            is_active BOOLEAN DEFAULT FALSE
-        );
-    ''')
-    # Insertion de l'admin (Louis)
-    cur.execute('''
-        INSERT INTO users (email, pseudo, password, role, code_verif, is_active)
-        VALUES ('admin@nomad.com', 'Louis', 'nomad2026', 'Fondateur', '000000', TRUE)
-        ON CONFLICT (email) DO NOTHING;
-    ''')
-    conn.commit()
-    cur.close()
-    conn.close()
+def envoyer_email_code(destinataire, code):
+    """Fonction qui envoie le mail via le serveur SMTP d'Outlook"""
+    msg = MIMEText(f"Bienvenue sur NOMAD PI !\n\nTon code de vérification est : {code}")
+    msg['Subject'] = "🔑 Code de vérification - NOMAD PI"
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = destinataire
 
-# Lancement de la base de données
-@app.on_event("startup")
-async def startup_event():
     try:
-        if DATABASE_URL:
-            init_db()
-            print("✅ SQL CONNECTÉ : La base de données est prête !")
-        else:
-            print("❌ ERREUR : La variable DATABASE_URL est vide sur Render !")
+        with smtplib.SMTP("smtp.office365.com", 587) as server:
+            server.starttls()  # Sécurise la connexion
+            server.login(EMAIL_ADDRESS, EMAIL_APP_PASSWORD)
+            server.send_message(msg)
+        print(f"✅ Email envoyé avec succès à {destinataire}")
     except Exception as e:
-        print(f"❌ ERREUR SQL : {e}")
+        print(f"❌ Erreur d'envoi d'email : {e}")
 
 # --- ROUTES ---
 
-@app.get("/")
-async def home(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    with open("static/index.html", "r", encoding="utf-8") as f:
+        return f.read()
 
 @app.post("/register")
-async def register(pseudo: str = Form(...), email: str = Form(...), password: str = Form(...)):
+async def register(email: str = Form(...), password: str = Form(...)):
+    code_verif = str(random.randint(100000, 999999))
+    
     try:
-        conn = get_db_connection()
+        conn = psycopg2.connect(DB_URL)
         cur = conn.cursor()
-        
-        # Vérifier si l'email existe déjà
-        cur.execute("SELECT email FROM users WHERE email = %s", (email,))
-        if cur.fetchone():
-            cur.close()
-            conn.close()
-            return JSONResponse({"status": "error", "message": "Email déjà utilisé"}, status_code=400)
-
-        # Créer le compte (non activé)
-        code_verif = str(random.randint(100000, 999999))
-        cur.execute("INSERT INTO users (email, pseudo, password, role, code_verif) VALUES (%s, %s, %s, %s, %s)",
-                    (email, pseudo, password, "eleve", code_verif))
+        # On insère l'utilisateur (non vérifié par défaut)
+        cur.execute(
+            "INSERT INTO utilisateurs (email, password, code_verif, verifie, role) VALUES (%s, %s, %s, %s, %s)",
+            (email, password, code_verif, False, 'user')
+        )
         conn.commit()
         cur.close()
         conn.close()
         
-        # AFFICHER LE CODE DANS LES LOGS RENDER
-        print(f"🔑 [NOUVEAU COMPTE] Email: {email} | Code: {code_verif}")
-        
+        # 🔥 NOUVEAUTÉ : On envoie le mail après l'inscription
+        envoyer_email_code(email, code_verif)
+        print(f"🔑 [LOG] Code pour {email} : {code_verif}")
+
         return RedirectResponse(url=f"/verification?email={email}", status_code=303)
     except Exception as e:
-        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+        print(f"❌ Erreur SQL : {e}")
+        return {"error": "Email déjà utilisé ou erreur base de données"}
 
-@app.get("/verification")
-async def page_verif(request: Request, email: str):
-    return templates.TemplateResponse("verif.html", {"request": request, "email": email})
+@app.get("/verification", response_class=HTMLResponse)
+async def page_verif(email: str):
+    with open("static/verif.html", "r", encoding="utf-8") as f:
+        content = f.read()
+    return content.replace("{{ email }}", email)
 
 @app.post("/verify")
 async def verify(email: str = Form(...), code: str = Form(...)):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT code_verif FROM users WHERE email = %s", (email,))
-    res = cur.fetchone()
-
-    if res and res[0] == code:
-        cur.execute("UPDATE users SET is_active = TRUE WHERE email = %s", (email,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return RedirectResponse(url="/dashboard", status_code=303)
-    
-    cur.close()
-    conn.close()
-    return JSONResponse({"status": "error", "message": "Code incorrect"}, status_code=400)
-
-@app.post("/login")
-async def login(email: str = Form(...), password: str = Form(...)):
-    conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("SELECT pseudo, role, is_active FROM users WHERE email = %s AND password = %s", (email, password))
-    user = cur.fetchone()
-    cur.close()
-    conn.close()
-
-    if user:
-        if not user['is_active']:
-            return JSONResponse({"status": "error", "message": "Compte non activé"}, status_code=403)
-        return {"status": "success", "user": user}
-    
-    return JSONResponse({"status": "error", "message": "Identifiants incorrects"}, status_code=401)
-
-@app.get("/dashboard")
-async def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    try:
+        conn = psycopg2.connect(DB_URL)
+        cur = conn.cursor()
+        cur.execute("SELECT code_verif FROM utilisateurs WHERE email = %s", (email,))
+        result = cur.fetchone()
+        
+        if result and result[0] == code:
+            cur.execute("UPDATE utilisateurs SET verifie = True WHERE email = %s", (email,))
+            conn.commit()
+            cur.close()
+            conn.close()
+            # Redirection vers l'accueil ou login une fois validé
+            return RedirectResponse(url="/?status=success", status_code=303)
+        else:
+            return {"error": "Code incorrect"}
+    except Exception as e:
+        return {"error": str(e)}
 
 if __name__ == "__main__":
     import uvicorn
-    # Récupère le port de Render (souvent 10000)
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=10000)
